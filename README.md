@@ -23,4 +23,5 @@ $ go build
 
 ```
 $ curl -x socks5h://192.168.5.254:1080  www.baidu.com
+$ curl -x socks5h://username:password@192.168.5.254:1080  www.baidu.com
 ```
