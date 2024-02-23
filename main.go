@@ -1,44 +1,71 @@
 package main
 
 import (
+	"bytes"
 	"flag"
-	"fmt"
-	"github.com/armon/go-socks5"
-	"os"
-	"strconv"
+	httproxy "github.com/justmao945/httproxy/http"
+	socks5 "github.com/justmao945/httproxy/socks"
+	"io"
+	"log"
+	"net"
+	"time"
 )
 
-var (
-	port     int
-	username string
-	password string
-	conf     = &socks5.Config{}
+const (
+	socks5Version = uint8(5)
 )
 
-func init() {
-	flag.StringVar(&username, "u", "", "username")
-	flag.StringVar(&password, "pwd", "", "password")
-	flag.IntVar(&port, "p", 1080, "port on listen, must be greater than 0")
-	flag.Parse()
-	if username != "" {
-		cred := socks5.StaticCredentials{
-			username: password,
-		}
-		cator := socks5.UserPassAuthenticator{Credentials: cred}
-		conf.AuthMethods = append(conf.AuthMethods, cator)
+type combConn struct {
+	net.Conn
+	r io.Reader
+}
+
+func (c combConn) Read(p []byte) (int, error) {
+	return c.r.Read(p)
+}
+
+var socks5Server = socks5.New(&socks5.Config{})
+
+func handConn(conn net.Conn) {
+	firstByte := []byte{0}
+	_, err := conn.Read(firstByte)
+	if err != nil {
+		log.Printf("read fist byte failed: %v\n", err)
+		return
+	}
+	conn2 := combConn{
+		conn,
+		io.MultiReader(bytes.NewReader(firstByte), conn),
+	}
+	if firstByte[0] == socks5Version {
+		socks5Server.ServeConn(conn2)
+	} else {
+		httproxy.ServeConn(conn2)
 	}
 }
 
 func main() {
-	server, err := socks5.New(conf)
+	var flagAddr string
+	log.SetFlags(log.Lshortfile | log.LstdFlags)
+	flag.StringVar(&flagAddr, "addr", ":1080", "serve HTTP and SOCKS5 proxy address")
+	flag.Parse()
+
+	listener, err := net.Listen("tcp", flagAddr)
 	if err != nil {
-		fmt.Println("[error]", err)
-		os.Exit(0)
+		log.Fatalf("listen failed: %v\n", err)
 	}
-	// Create SOCKS5 proxy on localhost port 1080
-	fmt.Printf("listening socks5://%s\n", "0.0.0.0:"+strconv.Itoa(port))
-	if err := server.ListenAndServe("tcp", ":"+strconv.Itoa(port)); err != nil {
-		fmt.Println("[error]", err)
-		os.Exit(0)
+	log.Printf("listen HTTP and SOCKS5 proxy on %v\n", flagAddr)
+	for {
+		conn, err := listener.Accept()
+		if err != nil {
+			log.Printf("accept failed: %v\n", err)
+			if nerr, ok := err.(net.Error); ok && nerr.Temporary() {
+				time.Sleep(10 * time.Millisecond)
+				continue
+			}
+			return // fatal error, stop
+		}
+
+		go handConn(conn)
 	}
 }
