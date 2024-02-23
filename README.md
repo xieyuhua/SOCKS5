@@ -8,7 +8,8 @@ socks5 proxy server builds with go/golang
 
 ## Install
 ```
-$ go get github.com/jqqjj/socks5
+$ go mod tidy
+$ go build
 ```
 
 ## Usage
@@ -19,3 +20,7 @@ $ go get github.com/jqqjj/socks5
 * -pwd (option)
   * password
         
+
+```
+$ curl -x socks5h://192.168.5.254:1080  www.baidu.com
+```
