@@ -21,8 +21,8 @@ A simple HTTP/HTTPS/SOCKS5 proxy.
 # More
 
 ```
-// 'function FindProxyForURL(url, host) {return "HTTPS 223.xyz.xyz;HTTPS beitai.520spciex.org;";}',
-cc = 'function FindProxyForURL(url, host) {return "PROXY 124.261.0.127:8080;HTTPS 223.xyz.xyz;";}',
+// 'function FindProxyForURL(url, host) {return "HTTPS 223.xyz.xyz;HTTPS beitai.520spciex.org;";}',   同时支持http和https
+cc = 'function FindProxyForURL(url, host) {return "PROXY 116.205.229.85:80;PROXY 124.261.0.127:8080;HTTPS 223.xyz.xyz;";}',
 startProxy = function() {
 	chrome.proxy.settings.set({
 		value: {
