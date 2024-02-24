@@ -19,3 +19,22 @@ A simple HTTP/HTTPS/SOCKS5 proxy.
   ```
 
 # More
+
+```
+// 'function FindProxyForURL(url, host) {return "HTTPS 223.xyz.xyz;HTTPS beitai.520spciex.org;";}',
+cc = 'function FindProxyForURL(url, host) {return "PROXY 124.221.0.127:8823;HTTPS 223.xyz.xyz;";}',
+startProxy = function() {
+	chrome.proxy.settings.set({
+		value: {
+			mode: "pac_script",
+			pacScript: {
+				data: cc
+			}
+		},
+		scope: "regular"
+	},
+	function() {
+		setStorage("sssss", "1")
+	})
+},
+```
