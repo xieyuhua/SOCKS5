@@ -22,7 +22,7 @@ A simple HTTP/HTTPS/SOCKS5 proxy.
 
 ```
 // 'function FindProxyForURL(url, host) {return "HTTPS 223.xyz.xyz;HTTPS beitai.520spciex.org;";}',
-cc = 'function FindProxyForURL(url, host) {return "PROXY 124.261.0.127:8823;HTTPS 223.xyz.xyz;";}',
+cc = 'function FindProxyForURL(url, host) {return "PROXY 124.261.0.127:8080;HTTPS 223.xyz.xyz;";}',
 startProxy = function() {
 	chrome.proxy.settings.set({
 		value: {
