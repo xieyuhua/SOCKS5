@@ -20,6 +20,31 @@ A simple HTTP/HTTPS/SOCKS5 proxy.
 
 # More
 
+以下是我自己写的PAC脚本，可作为模板使用：
+> 要代理的域名，如 facebook.com，twitter.com, youtube.com 公司的网络走公司代理，可在 domains 中的值处理
+```
+var domains = {
+    "google.com": 1,
+    "youtube.com": 1
+};
+var proxy = "SOCKS5 127.0.0.1:1080; SOCKS 127.0.0.1:1080; PROXY 127.0.0.1:8888; DIRECT;";
+var direct = 'DIRECT;';
+function FindProxyForURL(url, host) {
+    var lastPos;
+    do {
+        if (domains.hasOwnProperty(host)) {
+            return proxy;
+        }
+        lastPos = host.indexOf('.') + 1;
+        host = host.slice(lastPos);
+    } while (lastPos >= 1);
+    return direct;
+}
+```
+
+![2a22bece6f19a66854d6dd8244f7076](https://github.com/xieyuhua/socks5/assets/29120060/8fc6522d-8ec4-4f66-91d3-b9bef69ee1d2)
+
+
 ```
 // 'function FindProxyForURL(url, host) {return "HTTPS 223.xyz.xyz;HTTPS beitai.520spciex.org;";}',   同时支持http和https
 // 'function FindProxyForURL(url, host) {if ( shExpMatch(host, "*github*") ){	return "HTTPS 223.xyz.xyz;";}else{return "DIRECT";}}',
