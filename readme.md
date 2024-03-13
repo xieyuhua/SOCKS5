@@ -56,6 +56,7 @@ startProxy = function() {
 			mode: "pac_script",
 			pacScript: {
 				data: cc
+				//url:'https://www.xxxx.cn/api/pac.txt'
 			}
 		},
 		scope: "regular"
@@ -64,4 +65,6 @@ startProxy = function() {
 		setStorage("sssss", "1")
 	})
 },
+
+
 ```
